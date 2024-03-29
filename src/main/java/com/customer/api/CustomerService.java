@@ -12,17 +12,37 @@ public class CustomerService {
     @Autowired
     private CustomerRepository repository;
 
-    public List<Customer> getCustomers() {
+    public List<CustomerPersistent> getCustomers() {
 
         return repository.findAll();
 
     }
 
-    public Optional<Customer> getCustomerById(Integer id) {
+    public Optional<CustomerPersistent> getCustomerById(Integer id) {
 
         return repository.findById(id);
 
     }
 
+    public void createCustomer(CustomerPersistent customer) {
+
+        repository.saveAndFlush(customer);
+
+    }
+
+    public Optional<CustomerPersistent> updateCustomer(CustomerPersistent customer, Integer id) {
+
+        repository.saveAndFlush(customer);
+
+        Optional<CustomerPersistent> customerUpdated = repository.findById(id);
+
+        return customerUpdated;
+
+    }
+
+    public void deleteCustomer(Integer id) {
+
+        repository.deleteById(id);
+    }
 
 }

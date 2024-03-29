@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class CustomerController {
@@ -15,34 +16,45 @@ public class CustomerController {
     private CustomerService service;
 
     @GetMapping(value = "/customers")
-    public ResponseEntity<List<Customer>> getCustomers() {
+    public ResponseEntity<List<CustomerPersistent>> getCustomers() {
 
-        List<Customer> customers = service.getCustomers();
+        List<CustomerPersistent> customers = service.getCustomers();
 
         return new ResponseEntity<>(customers,HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/customer/{id}")
-    public void getCustomerById(@PathVariable Integer id) {
+    public ResponseEntity<Optional<CustomerPersistent>> getCustomerById(@PathVariable Integer id) {
+
+        Optional<CustomerPersistent> customer = service.getCustomerById(id);
+
+        return new ResponseEntity<>(customer, HttpStatus.OK);
 
     }
 
     @PostMapping(value = "/customer/create")
-    public ResponseEntity<String> createCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<String> createCustomer(@RequestBody CustomerPersistent customer) {
+
+        service.createCustomer(customer);
 
         return new ResponseEntity<>("Created Success",HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/customer/update/{id}")
-    public ResponseEntity<String> updateCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Optional<CustomerPersistent>> updateCustomer(@PathVariable Integer id, @RequestBody CustomerPersistent customer) {
 
-        return ResponseEntity.ok("Updated Success");
+        Optional<CustomerPersistent> customerUpdated = service.updateCustomer(customer, id);
+
+        return new ResponseEntity<>(customerUpdated, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/customer/delete/{id}")
-    public ResponseEntity<String> deleteCustomer() {
-        return ResponseEntity.ok("Deleted Success");
+    public ResponseEntity<String> deleteCustomer(@PathVariable Integer id) {
+
+        service.deleteCustomer(id);
+
+        return new ResponseEntity<>("Deleted", HttpStatus.OK);
     }
 
 
