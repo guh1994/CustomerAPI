@@ -16,18 +16,18 @@ public class CustomerController {
     private CustomerService service;
 
     @GetMapping(value = "/customers")
-    public ResponseEntity<List<CustomerPersistent>> getCustomers() {
+    public ResponseEntity<List<PersistentCustomer>> getCustomers() {
 
-        List<CustomerPersistent> customers = service.getCustomers();
+        List<PersistentCustomer> customers = service.getCustomers();
 
         return new ResponseEntity<>(customers,HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/customer/{id}")
-    public ResponseEntity<Optional<CustomerPersistent>> getCustomerById(@PathVariable Integer id) {
+    public ResponseEntity<Optional<PersistentCustomer>> getCustomerById(@PathVariable Integer id) {
 
-        Optional<CustomerPersistent> customer = service.getCustomerById(id);
+        Optional<PersistentCustomer> customer = service.getCustomerById(id);
 
         return new ResponseEntity<>(customer, HttpStatus.OK);
 
@@ -42,9 +42,9 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/customer/update/{id}")
-    public ResponseEntity<Optional<CustomerPersistent>> updateCustomer(@PathVariable Integer id, @RequestBody CustomerPersistent customer) {
+    public ResponseEntity<Optional<PersistentCustomer>> updateCustomer(@PathVariable Integer id, @RequestBody PersistentCustomer customer) {
 
-        Optional<CustomerPersistent> customerUpdated = service.updateCustomer(customer, id);
+        Optional<PersistentCustomer> customerUpdated = service.updateCustomer(customer, id);
 
         return new ResponseEntity<>(customerUpdated, HttpStatus.OK);
     }
