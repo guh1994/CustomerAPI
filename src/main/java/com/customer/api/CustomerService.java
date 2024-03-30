@@ -24,9 +24,11 @@ public class CustomerService {
 
     }
 
-    public void createCustomer(CustomerPersistent customer) {
+    public void createCustomer(CustomerDTO customer) {
 
-        repository.saveAndFlush(customer);
+        CustomerPersistent customerCreate = new CustomerPersistent(customer);
+
+        repository.saveAndFlush(customerCreate);
 
     }
 

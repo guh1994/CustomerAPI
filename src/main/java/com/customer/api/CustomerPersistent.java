@@ -15,4 +15,10 @@ public class CustomerPersistent {
     private String name;
     @Column(name = "email")
     private String email;
+
+    public CustomerPersistent(CustomerDTO customer) {
+        this.name = customer.name();
+        this.email = customer.email();
+
+    }
 }

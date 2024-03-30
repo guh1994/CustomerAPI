@@ -34,7 +34,7 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/customer/create")
-    public ResponseEntity<String> createCustomer(@RequestBody CustomerPersistent customer) {
+    public ResponseEntity<String> createCustomer(@RequestBody CustomerDTO customer) {
 
         service.createCustomer(customer);
 
