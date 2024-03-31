@@ -1,5 +1,6 @@
-package com.customer.api;
+package com.customer.api.repository;
 
+import com.customer.api.model.PersistentCustomer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,5 +1,7 @@
-package com.customer.api;
+package com.customer.api.controller;
 
+import com.customer.api.rest.RestCustomer;
+import com.customer.api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class CustomerController {
@@ -16,25 +17,25 @@ public class CustomerController {
     private CustomerService service;
 
     @GetMapping(value = "/customers")
-    public ResponseEntity<List<PersistentCustomer>> getCustomers() {
+    public ResponseEntity<List<RestCustomer>> getCustomers() {
 
-        List<PersistentCustomer> customers = service.getCustomers();
+        List<RestCustomer> customers = service.getCustomers();
 
         return new ResponseEntity<>(customers,HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/customer/{id}")
-    public ResponseEntity<Optional<PersistentCustomer>> getCustomerById(@PathVariable Integer id) {
+    public ResponseEntity<RestCustomer> getCustomerById(@PathVariable Integer id) {
 
-        Optional<PersistentCustomer> customer = service.getCustomerById(id);
+        RestCustomer customer = service.getCustomerById(id);
 
         return new ResponseEntity<>(customer, HttpStatus.OK);
 
     }
 
     @PostMapping(value = "/customer/create")
-    public ResponseEntity<String> createCustomer(@RequestBody CustomerDTO customer) {
+    public ResponseEntity<String> createCustomer(@RequestBody RestCustomer customer) {
 
         service.createCustomer(customer);
 
@@ -42,9 +43,9 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/customer/update/{id}")
-    public ResponseEntity<Optional<PersistentCustomer>> updateCustomer(@PathVariable Integer id, @RequestBody PersistentCustomer customer) {
+    public ResponseEntity<RestCustomer> updateCustomer(@PathVariable Integer id, @RequestBody RestCustomer customer) {
 
-        Optional<PersistentCustomer> customerUpdated = service.updateCustomer(customer, id);
+        RestCustomer customerUpdated = service.updateCustomer(customer, id);
 
         return new ResponseEntity<>(customerUpdated, HttpStatus.OK);
     }

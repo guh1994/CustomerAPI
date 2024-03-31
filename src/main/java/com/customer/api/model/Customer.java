@@ -1,4 +1,4 @@
-package com.customer.api;
+package com.customer.api.model;
 
 public interface Customer
 {
