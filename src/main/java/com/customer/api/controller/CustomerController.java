@@ -43,7 +43,8 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/customer/update/{id}")
-    public ResponseEntity<RestCustomer> updateCustomer(@PathVariable Integer id, @RequestBody RestCustomer customer) {
+    public ResponseEntity<RestCustomer> updateCustomer(@PathVariable Integer id,
+                                                       @RequestBody RestCustomer customer) {
 
         RestCustomer customerUpdated = service.updateCustomer(customer, id);
 

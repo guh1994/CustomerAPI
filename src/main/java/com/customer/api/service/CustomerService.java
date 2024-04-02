@@ -63,6 +63,9 @@ public class CustomerService {
 
     }
 
+    /**
+     * Method to create customer.
+     */
     public void createCustomer(final RestCustomer customer) {
 
         final PersistentCustomer customerCreate = PersistentCustomer.convert(customer);
@@ -71,24 +74,47 @@ public class CustomerService {
 
     }
 
+    /**
+     * Method to update a customer and retur customer updated
+     *
+     * @param customer
+     * @param id
+     * @return RestCustomer
+     */
     public RestCustomer updateCustomer(
             final RestCustomer customer,
             final Integer id) {
 
-        PersistentCustomer updateCustomer = PersistentCustomer.convert(customer);
-
-        repository.saveAndFlush(updateCustomer);
-
+        //Find customer by id
         Optional<PersistentCustomer> responseRepository = repository.findById(id);
 
+        //Convert RestCustomer into PersistentCustomer
+        PersistentCustomer persistentCustomer = PersistentCustomer.convert(customer);
+
+        //Create a object to return to controller
         RestCustomer response = null;
+
+        //Validation if exist some
         if (responseRepository.isPresent()) {
+
+            //Setting new customer to update
+            persistentCustomer.update(RestCustomer.convert(customer));
+
+            //execute update
+            repository.save(persistentCustomer);
+
             response = RestCustomer.convert(responseRepository.get());
+
         }
         return RestCustomer.convert(response);
 
     }
 
+    /**
+     * Method to delete customer.
+     *
+     * @param id
+     */
     public void deleteCustomer(
             final Integer id) {
 
