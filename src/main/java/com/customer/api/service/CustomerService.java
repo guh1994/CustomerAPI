@@ -1,124 +1,100 @@
 package com.customer.api.service;
 
-import com.customer.api.model.PersistentCustomer;
-import com.customer.api.repository.CustomerRepository;
-import com.customer.api.rest.RestCustomer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.customer.api.model.PersistentCustomer;
+import com.customer.api.repository.CustomerRepository;
+import com.customer.api.rest.RestCustomer;
+import com.customer.api.validator.RestEntityResponse;
+
 @Service
-public class CustomerService {
+public class CustomerService
+{
 
     @Autowired
     private CustomerRepository repository;
 
-    /**
-     * Method to get all customer with converted
-     *
-     * @return List<RestCustomer>
-     */
-    public List<RestCustomer> getCustomers() {
+    public List<RestCustomer> getCustomers()
+    {
 
-        //Getting all customer on DB
-        List<PersistentCustomer> allCustomers = repository.findAll();
+        final List<PersistentCustomer> allCustomers = repository.findAll();
+        return RestCustomer.convert( allCustomers );
+    }
 
-        //Create a list to add customer converted
-        List<RestCustomer> restCustomers = new ArrayList<>();
+    public RestCustomer getCustomerById(
+        final Integer id )
+    {
 
-        //foreach to add customer in list converted
-        for (PersistentCustomer persistentCustomer : allCustomers) {
-
-            //adding customer converted on the list
-            restCustomers.add(RestCustomer.convert(persistentCustomer));
+        final Optional<PersistentCustomer> persistentCustomer = repository.findById( id );
+        if( persistentCustomer.isPresent() ) {
+            return RestCustomer.convert( persistentCustomer.get() );
         }
 
-        return restCustomers;
+        return null;
     }
 
-    /**
-     * Find customer by id
-     *
-     * @param id
-     * @return RestCustomer
-     */
-    public RestCustomer getCustomerById(final Integer id) {
+    public RestEntityResponse<RestCustomer> createCustomer(
+        final RestCustomer customer )
+    {
 
-        //Getting customer by id
-        Optional<PersistentCustomer> responseRepository = repository.findById(id);
-
-        //create a object type RestCustomer
-        RestCustomer response = null;
-
-        //Validation response of repository to convert my customer in a RestCustomer
-        if (responseRepository.isPresent()) {
-
-            //Converting ind a RestCustomer
-            response = RestCustomer.convert(responseRepository.get());
+        final List<String> messages = validateCommons( customer );
+        if( ! messages.isEmpty() ) {
+            return RestEntityResponse.createError( messages );
         }
-        return response;
+
+        // TODO Validate in database existsByField
+
+        final PersistentCustomer persistedCustomer = repository.save( PersistentCustomer.create( customer ) );
+        return RestEntityResponse.createSuccess( RestCustomer.convert( persistedCustomer ) );
 
     }
 
-    /**
-     * Method to create customer.
-     */
-    public void createCustomer(final RestCustomer customer) {
-
-        final PersistentCustomer customerCreate = PersistentCustomer.convert(customer);
-
-        repository.saveAndFlush(customerCreate);
-
+    private List<String> validateCommons(
+        final RestCustomer customer )
+    {
+        if( customer == null ) {
+            return List.of( "O Payload está nulo." );
+        }
+        final List<String> messages = new ArrayList<>();
+        if( Strings.isEmpty( customer.email() ) ) {
+            messages.add( "O email está inválido" );
+        }
+        if( Strings.isEmpty( customer.name() ) ) {
+            messages.add( "O nome está inválido" );
+        }
+        return messages;
     }
 
-    /**
-     * Method to update a customer and retur customer updated
-     *
-     * @param customer
-     * @param id
-     * @return RestCustomer
-     */
     public RestCustomer updateCustomer(
-            final RestCustomer customer,
-            final Integer id) {
+        final RestCustomer customer,
+        final Integer id )
+    {
 
-        //Find customer by id
-        Optional<PersistentCustomer> responseRepository = repository.findById(id);
-
-        //Convert RestCustomer into PersistentCustomer
-        PersistentCustomer persistentCustomer = PersistentCustomer.convert(customer);
-
-        //Create a object to return to controller
-        RestCustomer response = null;
-
-        //Validation if exist some
-        if (responseRepository.isPresent()) {
-
-            //Setting new customer to update
-            persistentCustomer.update(RestCustomer.convert(customer));
-
-            //execute update
-            repository.save(persistentCustomer);
-
-            response = RestCustomer.convert(responseRepository.get());
-
+        final Optional<PersistentCustomer> persistedCustomer = repository.findById( id );
+        if( ! persistedCustomer.isPresent() ) {
+            throw new RuntimeException( "Customer with id %s not exists".formatted( id ) );
         }
-        return RestCustomer.convert(response);
+
+        final PersistentCustomer updatedCustomer = persistedCustomer.get();
+        updatedCustomer.update( customer );
+
+        return RestCustomer.convert( repository.save( updatedCustomer ) );
 
     }
 
-    /**
-     * Method to delete customer.
-     *
-     * @param id
-     */
     public void deleteCustomer(
-            final Integer id) {
-
-        repository.deleteById(id);
+        final Integer id )
+    {
+        if( id == null ) {
+            throw new RuntimeException( "Customer deletion id is null." );
+        }
+        repository.deleteById( id );
     }
 
 }

@@ -1,24 +1,28 @@
 package com.customer.api.rest;
 
-import com.customer.api.model.Customer;
-import jakarta.validation.constraints.NotBlank;
-
 import java.util.List;
 
+import com.customer.api.model.Customer;
+
+import jakarta.validation.constraints.NotBlank;
+
 public record RestCustomer(
-        Integer id,
-        @NotBlank String name,
-        @NotBlank String email)
-        implements
-        Customer {
+    @NotBlank String name,
+    @NotBlank String email )
+    implements
+        Customer
+{
 
     public static RestCustomer convert(
-            final Customer customer) {
-        return new RestCustomer(customer.id(), customer.name(), customer.email());
+        final Customer customer )
+    {
+        return new RestCustomer( customer.name(), customer.email() );
     }
 
     public static List<RestCustomer> convert(
-            final List<Customer> customers) {
-        return customers.stream().map(RestCustomer::convert).toList();
+        final List<? extends Customer> customers )
+    {
+        return customers.stream().map( RestCustomer::convert ).toList();
     }
+
 }
