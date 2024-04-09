@@ -1,21 +1,15 @@
 package com.customer.api.controller;
 
-import java.util.List;
-
+import com.customer.api.rest.RestCustomer;
+import com.customer.api.service.CustomerService;
+import com.customer.api.validator.RestEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.customer.api.rest.RestCustomer;
-import com.customer.api.service.CustomerService;
-import com.customer.api.validator.RestEntityResponse;
+import java.util.List;
 
 @Controller
 public class CustomerController
@@ -38,12 +32,19 @@ public class CustomerController
     }
 
     @GetMapping( value = "/customer/{id}" )
-    public ResponseEntity<RestCustomer> getCustomerById(
+    public ResponseEntity<RestEntityResponse<RestCustomer>> getCustomerById(
         @PathVariable final Integer id )
     {
         final RestCustomer customer = service.getCustomerById( id );
 
-        return new ResponseEntity<>( customer, HttpStatus.OK );
+        if (customer == null) {
+
+            final List<String> errorMessages = List.of("Não há cliente cadastrado com esse id");
+            return ResponseEntity.ok(new RestEntityResponse<RestCustomer>(false, errorMessages, null));
+
+        }
+
+        return ResponseEntity.ok(RestEntityResponse.createSuccess(customer));
 
     }
 
@@ -60,14 +61,17 @@ public class CustomerController
     }
 
     @PutMapping( value = "/customer/update/{id}" )
-    public ResponseEntity<RestCustomer> updateCustomer(
+    public ResponseEntity<RestEntityResponse<RestCustomer>> updateCustomer(
         @PathVariable final Integer id,
         @RequestBody final RestCustomer customer )
     {
 
-        final RestCustomer customerUpdated = service.updateCustomer( customer, id );
+        final RestEntityResponse<RestCustomer> responseEntity = service.updateCustomer(customer, id);
+        if (!responseEntity.success()) {
+            return ResponseEntity.badRequest().body(responseEntity);
+        }
 
-        return new ResponseEntity<>( customerUpdated, HttpStatus.OK );
+        return ResponseEntity.ok(responseEntity);
     }
 
     @DeleteMapping( value = "/customer/delete/{id}" )
