@@ -6,8 +6,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomerRepository
-    extends
-        JpaRepository<PersistentCustomer,Integer>
-{
+        extends
+        JpaRepository<PersistentCustomer, Integer> {
     public boolean existsByEmail(String email);
+
+    public PersistentCustomer findCustomerById(Integer id);
 }
