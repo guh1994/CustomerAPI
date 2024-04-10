@@ -83,7 +83,8 @@ public class CustomerService {
 
         final Optional<PersistentCustomer> persistedCustomer = repository.findById(id);
         if (!persistedCustomer.isPresent()) {
-            throw new RuntimeException("Customer with id %s not exists".formatted(id));
+            messages.add("Customer with id %s not exists".formatted(id));
+            return RestEntityResponse.createError(messages);
         }
 
         final PersistentCustomer updatedCustomer = persistedCustomer.get();
@@ -93,12 +94,18 @@ public class CustomerService {
 
     }
 
-    public void deleteCustomer(
+    public RestEntityResponse<RestCustomer> deleteCustomer(
             final Integer id) {
         if (id == null) {
-            throw new RuntimeException("Customer deletion id is null.");
+            List<String> messages = new ArrayList<>();
+            messages.add("Customer deletion id is null.");
+
+            return RestEntityResponse.deleteError(messages);
         }
+
         repository.deleteById(id);
+
+        return RestEntityResponse.deleteSuccess();
     }
 
 }

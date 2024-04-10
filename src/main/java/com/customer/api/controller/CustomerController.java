@@ -79,7 +79,11 @@ public class CustomerController
         @PathVariable final Integer id )
     {
 
-        service.deleteCustomer( id );
+        final RestEntityResponse<RestCustomer> responseEntity = service.deleteCustomer(id);
+
+        if (!responseEntity.success()) {
+            return ResponseEntity.badRequest().body("Não foi possivel deletar o cliente");
+        }
 
         return new ResponseEntity<>( "Deleted", HttpStatus.OK );
     }
