@@ -1,17 +1,16 @@
 package com.customer.api.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.customer.api.model.PersistentCustomer;
 import com.customer.api.repository.CustomerRepository;
 import com.customer.api.rest.RestCustomer;
 import com.customer.api.validator.RestEntityResponse;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -45,8 +44,7 @@ public class CustomerService {
 
         final boolean existsByEmail = repository.existsByEmail(customer.email());
         if (existsByEmail) {
-            messages.add("Customer allready exist with this email");
-            return RestEntityResponse.createError(messages);
+            return RestEntityResponse.createError(List.of("Customer allready exist with this email"));
         }
 
         final PersistentCustomer persistedCustomer = repository.save(PersistentCustomer.create(customer));

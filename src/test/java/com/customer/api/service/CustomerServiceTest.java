@@ -20,8 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -35,6 +34,7 @@ class CustomerServiceTest {
 
     @Mock
     private CustomerRepository repository;
+
     @Mock
     private PersistentCustomer persistentCustomer;
 
@@ -44,6 +44,7 @@ class CustomerServiceTest {
         when(persistentCustomer.email()).thenReturn(EMAIL);
         when(repository.findAll()).thenReturn(List.of(persistentCustomer));
         when(repository.findCustomerById(CUSTOMER_ID)).thenReturn(persistentCustomer);
+        when(repository.save(any())).thenReturn(persistentCustomer);
 
     }
 
@@ -78,13 +79,54 @@ class CustomerServiceTest {
 
 
     @Test
-    @Disabled("Gustav Implementation")
     public void shouldGetErrorMessageWhenCustomerNotFound() {
 
         RestEntityResponse<RestCustomer> restEntityResponse = subject.getCustomerById(12346);
 
         assertNull(restEntityResponse.entity());
         assertEquals(List.of("Customer not found"), restEntityResponse.messages());
+    }
+
+    @Test
+    public void shouldCreateCustomer() {
+
+        RestCustomer customer = new RestCustomer(persistentCustomer.name(), persistentCustomer.email());
+
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(customer);
+
+        assertNotNull(restEntityResponse.entity());
+        assertEquals(RestEntityResponse.createSuccess(customer), restEntityResponse);
+
+    }
+
+    @Test
+    @Disabled("TODO")
+    public void shouldValidateIfEmailCustomerExistsBeforeCreate() {
+
+        RestEntityResponse<RestCustomer> restEntityResponse = mock(RestEntityResponse.class);
+
+        RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), persistentCustomer.email());
+
+        assertEquals(List.of("Customer allready exist with this email"), verify(subject.createCustomer(restCustomer), times(2)).messages());
+
+    }
+
+    @Test
+    @Disabled("TODO")
+    public void shouldReturnErrorMessageWhenCustomerNameIsNullI() {
+
+    }
+
+    @Test
+    @Disabled("TODO")
+    public void ShouldReturnErrorMessageWhenCustomerEmailIsNull() {
+
+    }
+
+    @Test
+    @Disabled("TODO")
+    public void shouldReturnErrorMessageWhenCustomerIsNull() {
+
     }
 
 
