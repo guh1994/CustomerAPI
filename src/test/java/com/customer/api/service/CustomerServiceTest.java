@@ -154,6 +154,9 @@ class CustomerServiceTest {
         RestCustomer customer = new RestCustomer("Roberto", "roberto@gmail.com");
         RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(customer, CUSTOMER_ID);
 
+        assertTrue(restEntityResponse.success());
+        assertEquals(customer, restEntityResponse.entity());
+        assertNull(restEntityResponse.messages());
     }
 
     @Test
@@ -222,9 +225,7 @@ class CustomerServiceTest {
     @Test
     public void shouldThrowException() {
 
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
-            subject.throwExceptionForTest();
-        });
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> subject.throwExceptionForTest());
 
         assertTrue(runtimeException.getMessage().contains("Test..."));
 
