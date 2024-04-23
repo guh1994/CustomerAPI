@@ -17,10 +17,12 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -45,6 +47,7 @@ class CustomerServiceTest {
         when(repository.findAll()).thenReturn(List.of(persistentCustomer));
         when(repository.findCustomerById(CUSTOMER_ID)).thenReturn(persistentCustomer);
         when(repository.save(any())).thenReturn(persistentCustomer);
+        when(repository.findById(CUSTOMER_ID)).thenReturn(Optional.of(persistentCustomer));
 
     }
 
@@ -100,33 +103,100 @@ class CustomerServiceTest {
     }
 
     @Test
-    @Disabled("TODO")
     public void shouldValidateIfEmailCustomerExistsBeforeCreate() {
-
-        RestEntityResponse<RestCustomer> restEntityResponse = mock(RestEntityResponse.class);
+        when(repository.existsByEmail(persistentCustomer.email())).thenReturn(true);
 
         RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), persistentCustomer.email());
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
 
-        assertEquals(List.of("Customer allready exist with this email"), verify(subject.createCustomer(restCustomer), times(2)).messages());
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("Customer allready exist with this email"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+
+    }
+
+    @Test
+    public void shouldReturnErrorMessageWhenCustomerNameIsNullIWhenCreateCustomer() {
+
+        RestCustomer restCustomer = new RestCustomer(null, persistentCustomer.email());
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O nome está inválido"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+    }
+
+    @Test
+    public void ShouldReturnErrorMessageWhenCustomerEmailIsNullWhenCreateCustomer() {
+
+        RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), null);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O email está inválido"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+    }
+
+    @Test
+    public void shouldReturnErrorMessageWhenCustomerIsNullWhenCreateCustomer() {
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(null);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O Payload está nulo."), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
 
     }
 
     @Test
     @Disabled("TODO")
-    public void shouldReturnErrorMessageWhenCustomerNameIsNullI() {
+    public void shouldUpdateCustomer() {
+
+        RestCustomer customer = new RestCustomer("Roberto", "roberto@gmail.com");
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(customer, CUSTOMER_ID);
 
     }
 
     @Test
-    @Disabled("TODO")
-    public void ShouldReturnErrorMessageWhenCustomerEmailIsNull() {
+    public void shouldReturnErrorMessageIfCustomerNotExistsWhenUpdateCustomer() {
+        RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), persistentCustomer.email());
 
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(restCustomer, 2);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("Customer with id %s not exists".formatted(2)), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
     }
 
     @Test
-    @Disabled("TODO")
-    public void shouldReturnErrorMessageWhenCustomerIsNull() {
+    public void shouldReturnErrorMessageIfCustomerAndIdIsNull() {
 
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(null, null);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O Payload está nulo."), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+    }
+
+    @Test
+    public void shouldReturnErrorMessageIfCustomerEmailIsNull() {
+
+        RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), null);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(restCustomer, null);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O email está inválido"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+    }
+
+    @Test
+    public void shouldReturnErrorMessageIfCustomerNameIsNull() {
+
+        RestCustomer restCustomer = new RestCustomer(null, persistentCustomer.email());
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(restCustomer, null);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O nome está inválido"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
     }
 
 

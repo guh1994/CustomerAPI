@@ -52,20 +52,6 @@ public class CustomerService {
 
     }
 
-    private List<String> validateCommons(
-            final RestCustomer customer) {
-        if (customer == null) {
-            return List.of("O Payload está nulo.");
-        }
-        final List<String> messages = new ArrayList<>();
-        if (Strings.isEmpty(customer.email())) {
-            messages.add("O email está inválido");
-        }
-        if (Strings.isEmpty(customer.name())) {
-            messages.add("O nome está inválido");
-        }
-        return messages;
-    }
 
     public RestEntityResponse<RestCustomer> updateCustomer(
             final RestCustomer customer,
@@ -99,6 +85,20 @@ public class CustomerService {
         return RestEntityResponse.createSuccess("Customer Deleted with success");
     }
 
+    private List<String> validateCommons(
+            final RestCustomer customer) {
+        if (customer == null) {
+            return List.of("O Payload está nulo.");
+        }
+        final List<String> messages = new ArrayList<>();
+        if (Strings.isEmpty(customer.email())) {
+            messages.add("O email está inválido");
+        }
+        if (Strings.isEmpty(customer.name())) {
+            messages.add("O nome está inválido");
+        }
+        return messages;
+    }
 
     public void throwExceptionForTest() {
         throw new RuntimeException("Test...");
