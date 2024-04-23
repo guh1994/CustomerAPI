@@ -71,7 +71,9 @@ public class CustomerService {
         final PersistentCustomer updatedCustomer = persistedCustomer.get();
         updatedCustomer.update(customer);
 
-        return RestEntityResponse.createSuccess(RestCustomer.convert(updatedCustomer));
+        PersistentCustomer customerUpdated = repository.save(updatedCustomer);
+
+        return RestEntityResponse.createSuccess(RestCustomer.convert(customerUpdated));
 
     }
 

@@ -5,7 +5,6 @@ import com.customer.api.repository.CustomerRepository;
 import com.customer.api.rest.RestCustomer;
 import com.customer.api.validator.RestEntityResponse;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,8 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -39,6 +37,9 @@ class CustomerServiceTest {
 
     @Mock
     private PersistentCustomer persistentCustomer;
+
+    @Mock
+    private PersistentCustomer updatedCustomer;
 
     @BeforeEach
     public void setup() {
@@ -148,15 +149,22 @@ class CustomerServiceTest {
     }
 
     @Test
-    @Disabled("TODO")
     public void shouldUpdateCustomer() {
 
         RestCustomer customer = new RestCustomer("Roberto", "roberto@gmail.com");
+
+        when(repository.save(persistentCustomer)).thenReturn(updatedCustomer);
+        when(updatedCustomer.name()).thenReturn(customer.name());
+        when(updatedCustomer.email()).thenReturn(customer.email());
+
         RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(customer, CUSTOMER_ID);
+
+        verify(persistentCustomer).update(customer);
+        verify(repository).save(persistentCustomer);
 
         assertTrue(restEntityResponse.success());
         assertEquals(customer, restEntityResponse.entity());
-        assertNull(restEntityResponse.messages());
+        assertTrue(restEntityResponse.messages().isEmpty());
     }
 
     @Test

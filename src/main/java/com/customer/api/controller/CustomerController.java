@@ -6,18 +6,18 @@ import com.customer.api.validator.RestEntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired
     private CustomerService service;
 
-    @GetMapping(value = "/customers")
+    @GetMapping
     public ResponseEntity<RestEntityResponse<List<RestCustomer>>> getCustomers() {
 
         final List<RestCustomer> customers = service.getCustomers();
@@ -29,9 +29,9 @@ public class CustomerController {
 
     }
 
-    @GetMapping(value = "/customer/{id}")
+    @GetMapping(value = "{id}")
     public ResponseEntity<RestEntityResponse<RestCustomer>> getCustomerById(
-            @PathVariable final Integer id) {
+            @PathVariable(name = "id") final Integer id) {
         final RestEntityResponse<RestCustomer> restEntityResponse = service.getCustomerById(id);
         if (restEntityResponse.success()) {
             return ResponseEntity.ok(restEntityResponse);
@@ -39,7 +39,7 @@ public class CustomerController {
         return ResponseEntity.badRequest().body(restEntityResponse);
     }
 
-    @PostMapping(value = "/customer/create")
+    @PostMapping(value = "create")
     public ResponseEntity<RestEntityResponse<RestCustomer>> createCustomer(
             @RequestBody final RestCustomer customer) {
         final RestEntityResponse<RestCustomer> responseEntity = service.createCustomer(customer);
@@ -50,9 +50,9 @@ public class CustomerController {
         return ResponseEntity.ok(responseEntity);
     }
 
-    @PutMapping(value = "/customer/update/{id}")
+    @PutMapping(value = "update/{id}")
     public ResponseEntity<RestEntityResponse<RestCustomer>> updateCustomer(
-            @PathVariable final Integer id,
+            @PathVariable(name = "id") final Integer id,
             @RequestBody final RestCustomer customer) {
 
         final RestEntityResponse<RestCustomer> responseEntity = service.updateCustomer(customer, id);
@@ -63,9 +63,9 @@ public class CustomerController {
         return ResponseEntity.ok(responseEntity);
     }
 
-    @DeleteMapping(value = "/customer/delete/{id}")
+    @DeleteMapping(value = "delete/{id}")
     public ResponseEntity<String> deleteCustomer(
-            @PathVariable final Integer id) {
+            @PathVariable(name = "id") final Integer id) {
 
         final RestEntityResponse<RestCustomer> responseEntity = service.deleteCustomer(id);
 
