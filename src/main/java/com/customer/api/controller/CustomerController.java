@@ -29,10 +29,10 @@ public class CustomerController {
 
     }
 
-    @GetMapping(value = "{id}")
-    public ResponseEntity<RestEntityResponse<RestCustomer>> getCustomerById(
-            @PathVariable(name = "id") final Integer id) {
-        final RestEntityResponse<RestCustomer> restEntityResponse = service.getCustomerById(id);
+    @GetMapping(value = "{email}")
+    public ResponseEntity<RestEntityResponse<RestCustomer>> getCustomerByEmail(
+            @PathVariable(name = "email") final String email) {
+        final RestEntityResponse<RestCustomer> restEntityResponse = service.getCustomerByEmail(email);
         if (restEntityResponse.success()) {
             return ResponseEntity.ok(restEntityResponse);
         }
@@ -50,12 +50,10 @@ public class CustomerController {
         return ResponseEntity.ok(responseEntity);
     }
 
-    @PutMapping(value = "update/{id}")
-    public ResponseEntity<RestEntityResponse<RestCustomer>> updateCustomer(
-            @PathVariable(name = "id") final Integer id,
-            @RequestBody final RestCustomer customer) {
+    @PutMapping(value = "update/{email}")
+    public ResponseEntity<RestEntityResponse<RestCustomer>> updateCustomer(@PathVariable(name = "email") String email, @RequestBody final RestCustomer customer) {
 
-        final RestEntityResponse<RestCustomer> responseEntity = service.updateCustomer(customer, id);
+        final RestEntityResponse<RestCustomer> responseEntity = service.updateCustomer(customer, email);
         if (!responseEntity.success()) {
             return ResponseEntity.badRequest().body(responseEntity);
         }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -23,10 +22,10 @@ public class CustomerService {
         return RestCustomer.convert(allCustomers);
     }
 
-    public RestEntityResponse<RestCustomer> getCustomerById(
-            final Integer id) {
+    public RestEntityResponse<RestCustomer> getCustomerByEmail(
+            final String email) {
 
-        final PersistentCustomer persistentCustomer = repository.findCustomerById(id);
+        final PersistentCustomer persistentCustomer = repository.findCustomerByEmail(email);
         if (persistentCustomer != null) {
             RestCustomer restCustomer = RestCustomer.convert(persistentCustomer);
             return RestEntityResponse.createSuccess(restCustomer);
@@ -55,20 +54,20 @@ public class CustomerService {
 
     public RestEntityResponse<RestCustomer> updateCustomer(
             final RestCustomer customer,
-            final Integer id) {
+            final String email) {
 
         final List<String> messages = validateCommons(customer);
         if (!messages.isEmpty()) {
             return RestEntityResponse.createError(messages);
         }
 
-        final Optional<PersistentCustomer> persistedCustomer = repository.findById(id);
-        if (persistedCustomer.isEmpty()) {
-            messages.add("Customer with id %s not exists".formatted(id));
+        final PersistentCustomer persistedCustomer = repository.findCustomerByEmail(email);
+        if (persistedCustomer == null) {
+            messages.add("Customer with email %s not exists".formatted(email));
             return RestEntityResponse.createError(messages);
         }
 
-        final PersistentCustomer updatedCustomer = persistedCustomer.get();
+        final PersistentCustomer updatedCustomer = persistedCustomer;
         updatedCustomer.update(customer);
 
         PersistentCustomer customerUpdated = repository.save(updatedCustomer);

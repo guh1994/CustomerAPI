@@ -49,6 +49,7 @@ class CustomerServiceTest {
         when(repository.findCustomerById(CUSTOMER_ID)).thenReturn(persistentCustomer);
         when(repository.save(any())).thenReturn(persistentCustomer);
         when(repository.findById(CUSTOMER_ID)).thenReturn(Optional.of(persistentCustomer));
+        when(repository.findCustomerByEmail(EMAIL)).thenReturn(persistentCustomer);
 
     }
 
@@ -73,7 +74,7 @@ class CustomerServiceTest {
 
     @Test
     public void shouldGetCustomerById() {
-        RestEntityResponse<RestCustomer> restEntityResponse = subject.getCustomerById(1);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.getCustomerByEmail(persistentCustomer.email());
 
         RestCustomer restCustomer = restEntityResponse.entity();
 
@@ -85,7 +86,7 @@ class CustomerServiceTest {
     @Test
     public void shouldGetErrorMessageWhenCustomerNotFound() {
 
-        RestEntityResponse<RestCustomer> restEntityResponse = subject.getCustomerById(12346);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.getCustomerByEmail("gustavo@hotmail.com");
 
         assertNull(restEntityResponse.entity());
         assertEquals(List.of("Customer not found"), restEntityResponse.messages());
@@ -157,7 +158,7 @@ class CustomerServiceTest {
         when(updatedCustomer.name()).thenReturn(customer.name());
         when(updatedCustomer.email()).thenReturn(customer.email());
 
-        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(customer, CUSTOMER_ID);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(customer, persistentCustomer.email());
 
         verify(persistentCustomer).update(customer);
         verify(repository).save(persistentCustomer);
@@ -171,10 +172,10 @@ class CustomerServiceTest {
     public void shouldReturnErrorMessageIfCustomerNotExistsWhenUpdateCustomer() {
         RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), persistentCustomer.email());
 
-        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(restCustomer, 2);
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.updateCustomer(restCustomer, "gustavo@hotmail.com");
 
         assertFalse(restEntityResponse.success());
-        assertEquals(List.of("Customer with id %s not exists".formatted(2)), restEntityResponse.messages());
+        assertEquals(List.of("Customer with email %s not exists".formatted("gustavo@hotmail.com")), restEntityResponse.messages());
         assertNull(restEntityResponse.entity());
     }
 
