@@ -124,7 +124,7 @@ class CustomerServiceTest {
         RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
 
         assertFalse(restEntityResponse.success());
-        assertEquals(List.of("O nome está inválido"), restEntityResponse.messages());
+        assertEquals(List.of("O nome está vazio"), restEntityResponse.messages());
         assertNull(restEntityResponse.entity());
     }
 
@@ -135,8 +135,30 @@ class CustomerServiceTest {
         RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
 
         assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O email está vazio"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+    }
+
+    @Test
+    public void shouldReturnErrorMessageWhenCustomerEmailIsInvalid() {
+        RestCustomer restCustomer = new RestCustomer(persistentCustomer.name(), "roberto");
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
+
+        assertFalse(restEntityResponse.success());
         assertEquals(List.of("O email está inválido"), restEntityResponse.messages());
         assertNull(restEntityResponse.entity());
+
+    }
+
+    @Test
+    public void shouldReturnErrorMessageWhenCustomerNameIsInvalid() {
+        RestCustomer restCustomer = new RestCustomer("ab", persistentCustomer.email());
+        RestEntityResponse<RestCustomer> restEntityResponse = subject.createCustomer(restCustomer);
+
+        assertFalse(restEntityResponse.success());
+        assertEquals(List.of("O nome está inválido"), restEntityResponse.messages());
+        assertNull(restEntityResponse.entity());
+
     }
 
     @Test

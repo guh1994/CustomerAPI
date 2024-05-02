@@ -93,16 +93,28 @@ public class CustomerService {
         }
         final List<String> messages = new ArrayList<>();
         if (Strings.isEmpty(customer.email())) {
-            messages.add("O email está inválido");
+            messages.add("O email está vazio");
         }
         if (Strings.isEmpty(customer.name())) {
+            messages.add("O nome está vazio");
+        }
+        if (!customer.email().matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
+            messages.add("O email está inválido");
+        }
+        if (!customer.name().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\\\s-]{3,}$")) {
             messages.add("O nome está inválido");
         }
+
         return messages;
     }
 
     public void throwExceptionForTest() {
         throw new RuntimeException("Test...");
+    }
+
+    public void validateName(String name) {
+
+
     }
 
 }
