@@ -98,15 +98,28 @@ public class CustomerService {
         if (Strings.isEmpty(customer.name())) {
             messages.add("O nome está vazio");
         }
-        if (!customer.email().matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
-            messages.add("O email está inválido");
+
+        if (Strings.isNotEmpty(customer.email())) {
+
+            boolean validateEmailCustomer = customer.email().matches("^[\\w.-]+@[\\w.-]+\\.\\w+$");
+
+            if (!validateEmailCustomer) {
+                messages.add("O email está inválido");
+            }
         }
-        if (!customer.name().matches("^[A-Za-zÀ-ÖØ-öø-ÿ\\\\s-]{3,}$")) {
-            messages.add("O nome está inválido");
+
+        if (Strings.isNotEmpty(customer.name())) {
+
+            boolean validateNameCustomer = customer.name().matches("^[a-zA-ZÀ-ú\\s]{3,}$");
+            if (!validateNameCustomer) {
+                messages.add("O nome está inválido");
+            }
         }
 
         return messages;
+
     }
+
 
     public void throwExceptionForTest() {
         throw new RuntimeException("Test...");
