@@ -24,13 +24,13 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class CustomerServiceTest {
+class CustomerServiceImplTest {
 
     public static final String NAME = "Gustavo";
     public static final String EMAIL = "gustavo@gmail.com";
     public static final int CUSTOMER_ID = 1;
     @InjectMocks
-    private CustomerService subject;
+    private CustomerServiceImpl subject;
 
     @Mock
     private CustomerRepository repository;
